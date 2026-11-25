@@ -13,7 +13,7 @@ base64.workspace = true
 chrono.workspace = true
 rand.workspace = true
 # `SqlStorage`, the synchronous SQL handle of one Durable Object.
-worker = "0.8"
+worker = "0.8.5"
 
 [features]
 default = []

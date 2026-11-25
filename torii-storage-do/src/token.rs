@@ -112,10 +112,16 @@ impl TokenRepository for DoTokenRepository {
             return Ok(None);
         };
         let now = Utc::now();
-        self.db.exec(
-            "UPDATE torii_tokens SET used_at = ?, updated_at = ? WHERE token_hash = ?",
+        // Conditional on the row still being unused, so a token verifies once even if another
+        // verification of it ran between the read above and this write.
+        let written = self.db.write(
+            "UPDATE torii_tokens SET used_at = ?, updated_at = ? WHERE token_hash = ? \
+             AND used_at IS NULL",
             vec![millis(now), millis(now), found.token_hash.as_str().into()],
         )?;
+        if written != 1 {
+            return Ok(None);
+        }
         found.used_at = Some(now);
         found.updated_at = now;
         Ok(Some(found))
