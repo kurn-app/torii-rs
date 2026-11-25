@@ -9,7 +9,7 @@
 //! - Automatic account lockout after configurable failed attempts
 //! - Password reset as unlock mechanism
 //! - Full audit trail of failed login attempts
-//! - Background cleanup of old records
+//! - Background cleanup of old records (with the `tokio-runtime` feature)
 //! - Protection against user enumeration attacks
 //!
 //! # Example
@@ -219,6 +219,7 @@ impl<R: BruteForceProtectionRepository> BruteForceProtectionService<R> {
     /// # Returns
     ///
     /// A `JoinHandle` for the spawned task.
+    #[cfg(feature = "tokio-runtime")]
     pub fn start_cleanup_task(
         &self,
         mut shutdown: tokio::sync::watch::Receiver<bool>,
