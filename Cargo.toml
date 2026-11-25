@@ -17,6 +17,7 @@ members = [
     "torii-storage-sqlite",
     "torii-storage-postgres",
     "torii-storage-seaorm",
+    "torii-storage-do",
 
     # Level 5: Main library (depends on all above)
     "torii",
