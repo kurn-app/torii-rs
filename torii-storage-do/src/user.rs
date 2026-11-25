@@ -11,7 +11,8 @@ use torii_core::{
 
 use crate::{Db, Row, millis, millis_or_null, text_or_null};
 
-const COLUMNS: &str = "id, name, email, email_verified_at, locked_at, created_at, updated_at";
+pub(crate) const COLUMNS: &str =
+    "id, name, email, email_verified_at, locked_at, created_at, updated_at";
 
 /// [`UserRepository`] over `torii_users`.
 #[derive(Clone)]
@@ -59,7 +60,8 @@ impl DoUserRepository {
     }
 }
 
-fn user(values: &[worker::SqlStorageValue]) -> Result<User, Error> {
+/// A `torii_users` row, read in [`COLUMNS`] order.
+pub(crate) fn user(values: &[worker::SqlStorageValue]) -> Result<User, Error> {
     let row = Row::new("torii_users", values);
     Ok(User {
         id: UserId::new(&row.text(0)?),

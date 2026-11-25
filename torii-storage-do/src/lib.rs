@@ -24,6 +24,8 @@
 //! `SqlStorage::exec` is synchronous, and no repository method awaits between its statements, so
 //! a torii service call runs inside the object without another request interleaving.
 
+mod brute_force;
+mod oauth;
 mod session;
 mod token;
 mod user;
@@ -32,10 +34,15 @@ use chrono::{DateTime, Utc};
 use torii_core::{
     Error,
     error::StorageError,
-    repositories::{SessionRepositoryProvider, TokenRepositoryProvider, UserRepositoryProvider},
+    repositories::{
+        BruteForceRepositoryProvider, OAuthRepositoryProvider, SessionRepositoryProvider,
+        TokenRepositoryProvider, UserRepositoryProvider,
+    },
 };
 use worker::{SqlStorage, SqlStorageValue};
 
+pub use brute_force::DoBruteForceRepository;
+pub use oauth::DoOAuthRepository;
 pub use session::DoSessionRepository;
 pub use token::DoTokenRepository;
 pub use user::DoUserRepository;
@@ -98,10 +105,15 @@ const CREATE: &[&str] = &[
 ];
 
 /// The torii store over one Durable Object's SQLite database.
+///
+/// It provides the user, session, token, OAuth and brute-force repositories. It has no password
+/// or passkey repository, and so is not torii's aggregate `RepositoryProvider`.
 pub struct DoStorage {
     user: DoUserRepository,
     session: DoSessionRepository,
     token: DoTokenRepository,
+    oauth: DoOAuthRepository,
+    brute_force: DoBruteForceRepository,
 }
 
 impl DoStorage {
@@ -132,7 +144,9 @@ impl DoStorage {
         Ok(DoStorage {
             user: DoUserRepository::new(db.clone()),
             session: DoSessionRepository::new(db.clone()),
-            token: DoTokenRepository::new(db),
+            token: DoTokenRepository::new(db.clone()),
+            oauth: DoOAuthRepository::new(db.clone()),
+            brute_force: DoBruteForceRepository::new(db),
         })
     }
 }
@@ -158,6 +172,22 @@ impl TokenRepositoryProvider for DoStorage {
 
     fn token(&self) -> &Self::TokenRepo {
         &self.token
+    }
+}
+
+impl OAuthRepositoryProvider for DoStorage {
+    type OAuthRepo = DoOAuthRepository;
+
+    fn oauth(&self) -> &Self::OAuthRepo {
+        &self.oauth
+    }
+}
+
+impl BruteForceRepositoryProvider for DoStorage {
+    type BruteForceRepo = DoBruteForceRepository;
+
+    fn brute_force(&self) -> &Self::BruteForceRepo {
+        &self.brute_force
     }
 }
 
