@@ -712,10 +712,12 @@ mod tests {
     use super::*;
 
     // Test secret for HS256
+    #[cfg(feature = "jwt")]
     const TEST_HS256_SECRET: &[u8] = b"this_is_a_test_secret_key_for_hs256_jwt_tokens_not_for_prod";
 
     // Test private key for RS256
     // DO NOT EVER USE THIS KEY FOR ANYTHING REAL
+    #[cfg(feature = "jwt")]
     const TEST_RS256_PRIVATE_KEY: &[u8] = b"-----BEGIN PRIVATE KEY-----
 MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDBsFIR164UGIOZ
 R2nT57RQ8AloqAmJXh5KdoKZjHi5uSRALSASp1Dk0tDjiiwqvfWiUItcVqZRqsx4
@@ -745,6 +747,7 @@ JFQKh2GE6V1BMi+qJ9ipj0ESBv7rqPYC8ShUSr/SbkRU8jg2tOcvw+7KNtaMk6rv
 wl6BPaq7Rv4JOPgimQGP3d4=
 -----END PRIVATE KEY-----";
 
+    #[cfg(feature = "jwt")]
     const TEST_RS256_PUBLIC_KEY: &[u8] = b"-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwbBSEdeuFBiDmUdp0+e0
 UPAJaKgJiV4eSnaCmYx4ubkkQC0gEqdQ5NLQ44osKr31olCLXFamUarMeFbs46ZH
@@ -755,6 +758,7 @@ E6PCH4l4+x+0Uhy39zkWMUE1+E9NYEn5kn4BDnU8knQkrhZg67I3Edp1ni8tEFjO
 IwIDAQAB
 -----END PUBLIC KEY-----";
 
+    #[cfg(feature = "jwt")]
     #[test]
     fn test_random_rs256_key_generation() {
         // Generate a random keypair
@@ -831,6 +835,7 @@ IwIDAQAB
         assert!(!session.is_expired());
     }
 
+    #[cfg(feature = "jwt")]
     #[test]
     fn test_jwt_config_hs256() {
         let config = JwtConfig::new_hs256(TEST_HS256_SECRET.to_vec()).unwrap();
@@ -845,6 +850,7 @@ IwIDAQAB
         assert_eq!(config.jwt_algorithm(), Algorithm::HS256);
     }
 
+    #[cfg(feature = "jwt")]
     #[test]
     fn test_jwt_config_random_hs256() {
         let config = JwtConfig::new_random_hs256();
@@ -857,6 +863,7 @@ IwIDAQAB
         }
     }
 
+    #[cfg(feature = "jwt")]
     #[test]
     fn test_jwt_config_hs256_rejects_short_key() {
         // Test keys that are too short
@@ -894,6 +901,7 @@ IwIDAQAB
         }
     }
 
+    #[cfg(feature = "jwt")]
     #[test]
     fn test_jwt_config_hs256_accepts_valid_keys() {
         // Test keys that meet the minimum requirement
@@ -915,6 +923,7 @@ IwIDAQAB
         }
     }
 
+    #[cfg(feature = "jwt")]
     #[test]
     fn test_session_token_hs256_helpers_reject_short_key() {
         // Test that SessionToken helper methods also reject short keys
@@ -940,6 +949,7 @@ IwIDAQAB
         assert!(result.is_err(), "verify_jwt_hs256 should reject short key");
     }
 
+    #[cfg(feature = "jwt")]
     #[test]
     fn test_jwt_token_creation_and_verification_hs256() {
         let config = JwtConfig::new_hs256(TEST_HS256_SECRET.to_vec())
