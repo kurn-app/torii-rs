@@ -28,6 +28,9 @@ jobs:
       - name: Check torii-services for WASM
         run: cargo check -p torii-services --target wasm32-unknown-unknown --no-default-features --features wasm
 
+      - name: Check torii-storage-do for WASM
+        run: cargo check -p torii-storage-do --target wasm32-unknown-unknown --no-default-features --features wasm
+
       - name: Check torii-client for WASM
         run: cargo check -p torii-client --target wasm32-unknown-unknown --no-default-features --features wasm
 
